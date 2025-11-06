@@ -9,8 +9,8 @@ from flask import Flask
 # Bot Configuration - Use environment variables for deployment
 BOT_TOKEN = os.environ.get('BOT_TOKEN', "7703532839:AAG5yNnTAye8zmV58MnWLnuorBg8gaFpbB0")
 ADMIN_USER_ID = int(os.environ.get('ADMIN_USER_ID', "6011041717"))
-VIP_GROUP_ID = os.environ.get('VIP_GROUP_ID', "-1002750986636")  # Add your group ID here
-VIP_GROUP_LINK = "https://t.me/TMZBRAND_VIP_OFFICIAL"  # VIP group link
+VIP_GROUP_ID = os.environ.get('VIP_GROUP_ID', "-1002750986636")
+VIP_GROUP_LINK = "https://t.me/TMZBRAND_VIP_OFFICIAL"
 PORT = int(os.environ.get('PORT', 8080))
 
 # Store user data and registration count
@@ -45,164 +45,338 @@ def start(update: Update, context: CallbackContext) -> None:
     
     if not is_competition_active():
         update.message.reply_text(
-            "🎯 *Competition Complete!* 🎯\n\n"
-            "✨ *Thank you for your interest!* ✨\n\n"
-            "This VIP Quiz Competition has now concluded. Our amazing participants have been amazing! 🏆\n\n"
-            "🌟 *Stay tuned for our next exciting competition!* 🌟\n"
-            "We'll be back with more fun and bigger prizes! 💫",
+            "✨ *A Grand Finale!* ✨\n\n"
+            "Dearest visionary,\n\n"
+            "Our exclusive TMZ BRAND VIP Quiz Competition has reached its magnificent conclusion. "
+            "The brilliance displayed by our esteemed participants was truly extraordinary. 🏆\n\n"
+            "💫 *The Journey Continues...*\n"
+            "Stay connected with TMZ BRAND for future exclusive experiences that celebrate excellence "
+            "and reward brilliance. Your journey with luxury is just beginning.\n\n"
+            "With utmost appreciation,\n*The TMZ BRAND Team* 🌟",
             parse_mode=ParseMode.MARKDOWN
         )
         return
     
     if len(registered_users) >= MAX_REGISTRATIONS:
         update.message.reply_text(
-            "🚫 *Registration Full!* 🚫\n\n"
-            "😮 Wow! All 10 VIP spots have been filled! \n\n"
-            "💔 We're sorry you missed this one, but don't worry!\n\n"
-            "⭐ *Follow us for future competitions* ⭐\n"
-            "We'll be hosting more exciting quizzes soon! 🎉",
+            "🌟 *Exclusive Access Filled* 🌟\n\n"
+            "Dearest connoisseur of excellence,\n\n"
+            "Our VIP sanctuary has reached its capacity of 10 distinguished participants. "
+            "The response has been nothing short of extraordinary.\n\n"
+            "💎 *Your Elegance is Noted*\n"
+            "While our current experience is fully subscribed, your interest has been gracefully noted. "
+            "We shall personally notify you when our next exclusive gathering is curated.\n\n"
+            "Until then, may your days be filled with brilliance and sophistication.\n\n"
+            "With refined regards,\n*TMZ BRAND* 💫",
             parse_mode=ParseMode.MARKDOWN
         )
         return
     
     welcome_text = """
-🎊 *WELCOME TO TMZ BRAND VIP FUN QUIZ COMPETITION!* 🎊
+🎩 *WELCOME TO THE TMZ BRAND VIP QUIZ EXPERIENCE* 🎩
 
-🔥 *THIS IS FOR THE BRAVE AND BRILLIANT!* 🔥
-*Only if you're ready to showcase your smarts and win big!* 💪
+*Where Brilliance Meets Exclusive Luxury*
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Dearest seeker of excellence,
 
-💼 *COMPETITION DETAILS:*
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-💰 *Entry Fee:* ₦2,000
-🏦 *Bank:* OPAY 
-👤 *Account Name:* OLUWATOBILOBA KEHINDE
-🔢 *Account Number:* 8079304530
+We are profoundly delighted to welcome you to the TMZ BRAND VIP Quiz Competition—an exclusive gathering 
+for those who appreciate the finer things in life and possess minds as sharp as their taste.
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-🏆 *AMAZING PRIZES AWAITING YOU!* 🏆
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🥇 *First Place:* ₦10,000 💰
-🥈 *Second Place:* ₦5,000 💵  
-🥉 *Third Place:* ₦5,000 💸
+💎 *THE EXPERIENCE AWAITS* 💎
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✨ *An Exclusive Affair:* Limited to 10 distinguished participants
+🎯 *Interactive Excellence:* Powered by mentimeter.com
+🏆 *Prestigious Recognition:* Celebrate your intellectual prowess
+💫 *Sophisticated Engagement:* Where minds meet luxury
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-📅 *Competition Ends:* {end_time}
+🏅 *PRESTIGIOUS ACCOLADES* 🏅
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🥇 *First Honor:* ₦10,000 • The Crown of Brilliance
+🥈 *Second Distinction:* ₦5,000 • The Medal of Excellence  
+🥉 *Third Merit:* ₦5,000 • The Badge of Distinction
 
-🎯 *QUICK FACTS:*
-• 🎮 We use *mentimeter.com* for super fun interactive sessions!
-• 👥 Only *10 VIP participants* will be selected
-• ⏰ First to complete registration gets priority!
-• 🎁 Everyone gets a chance to shine!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-💫 *Ready to join the excitement?* 
-*This could be your moment to shine!* ✨
+📅 *Grand Finale:* {end_time}
+
+🌟 *Why This Experience is Extraordinary:*
+• An intimate gathering of only 10 brilliant minds
+• State-of-the-art interactive platform
+• Real-time intellectual engagement
+• Prestigious recognition of your capabilities
+• The TMZ BRAND seal of excellence
+
+Darling visionary, this is more than a competition—it's a celebration of intellectual elegance. 
+A moment where your brilliance takes center stage in an exclusive setting worthy of your capabilities.
+
+*Are you ready to claim your place among the exceptional?* ✨
 """.format(end_time=COMPETITION_END_TIME.strftime('%B %d, %Y at %I:%M %p'))
     
-    keyboard = [[InlineKeyboardButton("💰 I'VE PAID - SUBMIT PROOF 🎯", callback_data="paid_confirmation")]]
+    keyboard = [
+        [InlineKeyboardButton("🌟 DISCOVER THE EXPERIENCE 🌟", callback_data="discover_experience")],
+        [InlineKeyboardButton("💎 LEARN ABOUT THE JOURNEY 💎", callback_data="learn_journey")]
+    ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     
     update.message.reply_text(welcome_text, parse_mode=ParseMode.MARKDOWN, reply_markup=reply_markup)
 
-def handle_paid_confirmation(update: Update, context: CallbackContext) -> None:
+def handle_discover_experience(update: Update, context: CallbackContext) -> None:
     query = update.callback_query
     query.answer()
     
     if not is_competition_active():
         query.edit_message_text(
-            "⏰ *Competition Closed!* ⏰\n\n"
-            "This amazing quiz has ended. But don't worry! 🌈\n\n"
-            "🌟 *More exciting competitions coming soon!* 🌟\n"
-            "Stay connected with us for future opportunities! 🎉",
+            "✨ *A Beautiful Conclusion* ✨\n\n"
+            "Dearest visionary,\n\n"
+            "This exclusive experience has reached its elegant conclusion. "
+            "The symphony of brilliant minds has created memories we shall cherish forever.\n\n"
+            "Stay connected with TMZ BRAND for future curated experiences that celebrate "
+            "the extraordinary in everyone.\n\n"
+            "With gratitude and elegance,\n*The TMZ BRAND Team* 🌟",
             parse_mode=ParseMode.MARKDOWN
         )
         return
     
-    payment_instructions = """
-✅ *PAYMENT INSTRUCTIONS* ✅
+    experience_text = """
+💫 *THE TMZ BRAND EXPERIENCE UNFOLDS* 💫
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-💳 *BANK DETAILS FOR PAYMENT:*
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🏦 *Bank:* OPAY 
-👤 *Account Name:* OLUWATOBILOBA KEHINDE
-🔢 *Account Number:* 8079304530
-💵 *Amount:* ₦2,000
+Dearest seeker of extraordinary moments,
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📅 *Competition Ends:* {end_time}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Allow us to unveil the sophisticated journey that awaits you in our exclusive VIP Quiz Competition.
 
-🎯 *FOLLOW THESE SIMPLE STEPS:*
-1️⃣ Make payment to the account above
-2️⃣ Take a clear screenshot 📸
-3️⃣ Make sure all details are visible
-4️⃣ Upload the screenshot here
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-💡 *PRO TIPS FOR FAST APPROVAL:*
-• Ensure screenshot is clear and bright ✨
-• Show transaction details clearly
-• No edits or modifications please
+🎭 *THE CURATED JOURNEY* 🎭
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✨ *Elegant Engagement:* Our platform transforms competition into an art form
+🌟 *Intimate Setting:* Only 10 distinguished participants for personalized attention
+🎯 *Cutting-Edge Technology:* Powered by mentimeter.com for seamless interaction
+💎 *Luxurious Pace:* Thoughtfully timed to appreciate every moment
+🏆 *Prestigious Recognition:* Your brilliance celebrated with sophistication
 
-🚀 *WHAT HAPPENS NEXT?*
-• We'll verify your payment quickly ⚡
-• You'll get VIP group access instantly 🎉
-• Ready to compete and win! 🏆
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-🎮 *ABOUT OUR QUIZ PLATFORM:*
-• We use *mentimeter.com* - super fun and interactive! 🎯
-• No downloads needed - works on any device 📱💻
-• Real-time leaderboard and excitement! 🎊
+🤵 *YOUR HOSTS* 🤵
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Our TMZ BRAND curators are dedicated to creating an atmosphere of intellectual luxury, 
+where every participant feels valued, celebrated, and inspired.
 
-🌟 *We're excited to have you join us!* 🌟
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📅 *Grand Finale:* {end_time}
+
+Darling visionary, this is not merely a competition—it's a gathering of minds, 
+a celebration of intellect, and an opportunity to connect with fellow exceptional individuals 
+in an atmosphere of refined elegance.
+
+*Ready to explore how to secure your exclusive place?* 🌟
 """.format(end_time=COMPETITION_END_TIME.strftime('%B %d, %Y at %I:%M %p'))
     
-    query.edit_message_text(payment_instructions, parse_mode=ParseMode.MARKDOWN)
+    keyboard = [
+        [InlineKeyboardButton("💼 SECURE MY PLACE 💼", callback_data="secure_place")],
+        [InlineKeyboardButton("🌟 THE JOURNEY CONTINUES 🌟", callback_data="learn_journey")]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    query.edit_message_text(experience_text, parse_mode=ParseMode.MARKDOWN, reply_markup=reply_markup)
+
+def handle_learn_journey(update: Update, context: CallbackContext) -> None:
+    query = update.callback_query
+    query.answer()
+    
+    if not is_competition_active():
+        query.edit_message_text(
+            "🎭 *A Performance to Remember* 🎭\n\n"
+            "Dearest patron of excellence,\n\n"
+            "Our grand performance has reached its final curtain call. "
+            "The stage was graced by extraordinary talent and brilliant minds.\n\n"
+            "TMZ BRAND continues to curate exceptional experiences for those "
+            "who appreciate the art of intellectual engagement.\n\n"
+            "With artistic appreciation,\n*The TMZ BRAND Ensemble* 🌟",
+            parse_mode=ParseMode.MARKDOWN
+        )
+        return
+    
+    journey_text = """
+🎭 *THE ART OF INTELLECTUAL ELEGANCE* 🎭
+
+Dearest appreciator of fine experiences,
+
+At TMZ BRAND, we believe that intellectual engagement should be as luxurious 
+as the finest things in life. Our VIP Quiz Competition is crafted as a symphony 
+of minds, where every moment is designed to celebrate your brilliance.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✨ *THE EXPERIENCE CURATION* ✨
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💎 *Exclusive Access:* Limited to 10 participants for intimate engagement
+🎯 *Technological Sophistication:* mentimeter.com ensures flawless interaction
+🌟 *Elegant Atmosphere:* Where every mind feels celebrated and valued
+🏆 *Prestigious Recognition:* Awards that honor true intellectual achievement
+🤵 *Personalized Attention:* Our hosts ensure your comfort and enjoyment
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📅 *Grand Finale:* {end_time}
+
+This is more than a competition—it's a gathering of extraordinary individuals 
+in a setting worthy of their capabilities. A moment where intellectual prowess 
+meets sophisticated engagement.
+
+Darling visionary, your place at this exclusive gathering awaits. 
+The question is not if you're worthy, but if you're ready to claim the experience 
+you truly deserve.
+
+*Shall we discuss securing your distinguished place?* 💫
+""".format(end_time=COMPETITION_END_TIME.strftime('%B %d, %Y at %I:%M %p'))
+    
+    keyboard = [
+        [InlineKeyboardButton("💎 SECURE MY DISTINGUISHED PLACE 💎", callback_data="secure_place")],
+        [InlineKeyboardButton("🌟 DISCOVER THE EXPERIENCE 🌟", callback_data="discover_experience")]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    query.edit_message_text(journey_text, parse_mode=ParseMode.MARKDOWN, reply_markup=reply_markup)
+
+def handle_secure_place(update: Update, context: CallbackContext) -> None:
+    query = update.callback_query
+    query.answer()
+    
+    if not is_competition_active():
+        query.edit_message_text(
+            "💫 *An Experience Concluded* 💫\n\n"
+            "Dearest visionary,\n\n"
+            "This exclusive gathering has reached its beautiful conclusion. "
+            "The connections made and brilliance displayed will be remembered fondly.\n\n"
+            "TMZ BRAND looks forward to welcoming you to future curated experiences "
+            "that celebrate intellectual excellence in luxurious settings.\n\n"
+            "With elegant anticipation,\n*The TMZ BRAND Team* 🌟",
+            parse_mode=ParseMode.MARKDOWN
+        )
+        return
+    
+    if len(registered_users) >= MAX_REGISTRATIONS:
+        query.edit_message_text(
+            "🌟 *Exclusive Capacity Reached* 🌟\n\n"
+            "Dearest seeker of excellence,\n\n"
+            "Our intimate gathering of 10 distinguished participants has reached capacity. "
+            "The response has been overwhelmingly elegant.\n\n"
+            "Your interest in TMZ BRAND experiences has been gracefully noted in our records. "
+            "We shall personally contact you when our next exclusive event is being curated.\n\n"
+            "Until our paths cross again in celebration of brilliance,\n\n"
+            "With refined regards,\n*TMZ BRAND* 💎",
+            parse_mode=ParseMode.MARKDOWN
+        )
+        return
+    
+    payment_text = """
+💎 *SECURING YOUR DISTINGUISHED PLACE* 💎
+
+Dearest future participant,
+
+We are delighted that you've chosen to join our exclusive gathering of brilliant minds. 
+Securing your place is a simple, elegant process that reflects the TMZ BRAND experience.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🏦 *CONTRIBUTION DETAILS* 🏦
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+This contribution ensures our ability to create an extraordinary experience 
+worthy of participants of your caliber.
+
+💵 *Amount:* ₦2,000
+🏛️ *Bank:* OPAY 
+👤 *Account Name:* OLUWATOBILOBA KEHINDE
+🔢 *Account Number:* 8079304530
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📅 *Grand Finale:* {end_time}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 *THE ELEGANT PROCESS:*
+1️⃣ Complete your contribution using the details above
+2️⃣ Capture a clear image of your transaction confirmation
+3️⃣ Gracefully submit your confirmation here
+
+💫 *FOR EXPEDITED PROCESSING:*
+• Ensure all transaction details are clearly visible
+• Natural lighting works wonders for clarity
+• No digital alterations, please
+
+🚀 *UPON CONFIRMATION:*
+• Immediate access to our exclusive VIP gathering
+• Personal welcome from our TMZ BRAND hosts
+• All competition details and elegant preparations
+
+Darling visionary, we are genuinely excited to welcome you into our exclusive circle 
+of brilliant minds. Your journey toward prestigious recognition begins now.
+
+*Ready to complete your reservation?* ✨
+""".format(end_time=COMPETITION_END_TIME.strftime('%B %d, %Y at %I:%M %p'))
+    
+    query.edit_message_text(payment_text, parse_mode=ParseMode.MARKDOWN)
 
 def handle_payment_proof(update: Update, context: CallbackContext) -> None:
     user = update.effective_user
     
     if not is_competition_active():
         update.message.reply_text(
-            "⏰ *Competition Complete!* ⏰\n\n"
-            "This exciting quiz has ended. Thank you for your interest! 🙏\n\n"
-            "🌈 *Stay tuned for our next amazing competition!* 🌈\n"
-            "We promise it will be worth the wait! 💫",
+            "✨ *A Beautiful Conclusion* ✨\n\n"
+            "Dearest visionary,\n\n"
+            "Our exclusive gathering has reached its elegant conclusion. "
+            "The symphony of brilliant minds has created memories we shall cherish.\n\n"
+            "Thank you for your interest in TMZ BRAND experiences. "
+            "We look forward to welcoming you to future curated events that celebrate excellence.\n\n"
+            "With gratitude and sophistication,\n*The TMZ BRAND Team* 🌟",
             parse_mode=ParseMode.MARKDOWN
         )
         return
     
     if len(registered_users) >= MAX_REGISTRATIONS:
         update.message.reply_text(
-            "😮 *All Spots Filled!* 😮\n\n"
-            "Wow! All 10 VIP spots have been taken! 🚀\n\n"
-            "💔 We're sorry you missed out this time.\n\n"
-            "⭐ *But don't worry!* ⭐\n"
-            "Follow us for future exciting opportunities! 🎊\n\n"
-            "🌟 Your enthusiasm is appreciated! 🌟",
+            "💎 *Exclusive Capacity Achieved* 💎\n\n"
+            "Dearest seeker of excellence,\n\n"
+            "Our intimate gathering of 10 distinguished participants has reached its elegant capacity. "
+            "The response has been nothing short of extraordinary.\n\n"
+            "Your enthusiasm for intellectual luxury has been gracefully noted. "
+            "We shall personally inform you when our next exclusive experience is being curated.\n\n"
+            "Until then, may your days be filled with brilliance and sophisticated engagements.\n\n"
+            "With refined appreciation,\n*TMZ BRAND* 🌟",
             parse_mode=ParseMode.MARKDOWN
         )
         return
     
     if user.id in registered_users:
         update.message.reply_text(
-            "🎉 *Welcome Back!* 🎉\n\n"
-            "You're already part of our VIP Quiz family! 🏆\n\n"
-            f"💫 Join our VIP group here: {VIP_GROUP_LINK}\n"
-            "Get ready to showcase your brilliance! ✨",
+            "🌟 *Welcome Back, Distinguished Participant!* 🌟\n\n"
+            "Dearest valued member,\n\n"
+            "You are already part of our exclusive TMZ BRAND VIP gathering! "
+            "Your place among our brilliant participants is secured and celebrated.\n\n"
+            f"💫 *Access our exclusive circle here:* {VIP_GROUP_LINK}\n\n"
+            "Prepare to engage in an experience worthy of your capabilities. "
+            "The stage is set for intellectual elegance and prestigious recognition.\n\n"
+            "With anticipation and elegance,\n*TMZ BRAND* 💎",
             parse_mode=ParseMode.MARKDOWN
         )
         return
     
     if user.id in user_data and user_data[user.id].get('submitted', False):
         update.message.reply_text(
-            "⏳ *Almost There!* ⏳\n\n"
-            "Your payment proof is being reviewed by our team! 👀\n\n"
-            "💫 We're working quickly to get you verified!\n"
-            "You'll hear from us very soon! ⚡",
+            "⏳ *Your Submission is Being Curated* ⏳\n\n"
+            "Dearest future participant,\n\n"
+            "Your reservation details are currently undergoing our elegant review process. "
+            "We are ensuring every detail meets the TMZ BRAND standard of excellence.\n\n"
+            "This sophisticated process typically requires 5-10 minutes of careful attention. "
+            "You will receive personal notification the moment your exclusive access is granted.\n\n"
+            "Thank you for your patience and understanding of our commitment to quality.\n\n"
+            "With elegant anticipation,\n*TMZ BRAND* 🌟",
             parse_mode=ParseMode.MARKDOWN
         )
         return
@@ -215,12 +389,12 @@ def handle_payment_proof(update: Update, context: CallbackContext) -> None:
     }
     
     keyboard = [
-        [InlineKeyboardButton("✅ APPROVE & WELCOME 🎉", callback_data=f"approve_{user.id}"),
-         InlineKeyboardButton("❌ NEEDS REVIEW 🔄", callback_data=f"reject_{user.id}")]
+        [InlineKeyboardButton("🎩 APPROVE & WELCOME ELEGANTLY 💫", callback_data=f"approve_{user.id}")],
+        [InlineKeyboardButton("🔍 REQUEST REFINED CLARIFICATION 🎭", callback_data=f"reject_{user.id}")]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     
-    caption = f"💰 *NEW PAYMENT PROOF RECEIVED!* 💰\n\n👤 From: @{user.username or user.first_name}\n📛 Name: {user.first_name}\n🎯 Slots Used: {len(registered_users)}/{MAX_REGISTRATIONS}\n\n⚡ *Ready for review!* ⚡"
+    caption = f"💎 *NEW RESERVATION REQUEST* 💎\n\n👤 *From:* @{user.username or user.first_name}\n🎩 *Name:* {user.first_name}\n💫 *Current Gathering:* {len(registered_users)}/{MAX_REGISTRATIONS}\n\n🌟 *Ready for Sophisticated Review* 🌟"
     
     try:
         if update.message.photo:
@@ -231,14 +405,21 @@ def handle_payment_proof(update: Update, context: CallbackContext) -> None:
             context.bot.send_document(ADMIN_USER_ID, document=file_id, caption=caption, parse_mode=ParseMode.MARKDOWN, reply_markup=reply_markup)
         
         update.message.reply_text(
-            "🎉 *PAYMENT PROOF RECEIVED!* 🎉\n\n"
-            "✅ *Great! We've got your payment proof!*\n\n"
-            "⏰ *What's happening now?*\n"
-            "• Our team is reviewing your submission 👀\n"
-            "• Verification usually takes 5-10 minutes ⚡\n"
-            "• You'll get VIP access once approved! 🎊\n\n"
-            "💫 *Competition ends on* {end_time}\n\n"
-            "🌟 *Get ready to showcase your skills!* 🌟".format(
+            "🎭 *RESERVATION CONFIRMATION RECEIVED* 🎭\n\n"
+            "Dearest future participant,\n\n"
+            "✨ *Elegant Submission Acknowledged!*\n\n"
+            "Your reservation details have been gracefully received and are now "
+            "undergoing our sophisticated review process.\n\n"
+            "⏰ *Our Curated Timeline:*\n"
+            "• Our team is personally reviewing your submission with careful attention\n"
+            "• This elegant process typically requires 5-10 minutes\n"
+            "• You will receive immediate notification upon approval\n"
+            "• Exclusive VIP access will be granted seamlessly\n\n"
+            "💫 *Grand Finale:* {end_time}\n\n"
+            "We are genuinely excited about the prospect of welcoming you into "
+            "our exclusive circle of brilliant minds. Your intellectual elegance "
+            "will be a wonderful addition to our gathering.\n\n"
+            "With sophisticated anticipation,\n*TMZ BRAND* 🌟".format(
                 end_time=COMPETITION_END_TIME.strftime('%B %d, %Y at %I:%M %p')
             ),
             parse_mode=ParseMode.MARKDOWN
@@ -246,10 +427,13 @@ def handle_payment_proof(update: Update, context: CallbackContext) -> None:
         
     except Exception as e:
         update.message.reply_text(
-            "😅 *Oops! Something went wrong!* 😅\n\n"
-            "❌ We encountered a small issue processing your proof.\n\n"
-            "💡 *Please try again or contact* @Tmzbrandceo *for assistance.*\n\n"
-            "🌟 We're here to help you join the fun! 🌟",
+            "🎭 *A Moment of Refinement Needed* 🎭\n\n"
+            "Dearest visionary,\n\n"
+            "We encountered a temporary elegance interruption while processing your submission.\n\n"
+            "💡 *For personalized assistance, please contact* @Tmzbrandceo\n\n"
+            "Our team is dedicated to ensuring your journey with TMZ BRAND begins smoothly "
+            "and continues with the sophistication you deserve.\n\n"
+            "With commitment to excellence,\n*TMZ BRAND* 💎",
             parse_mode=ParseMode.MARKDOWN
         )
 
@@ -259,9 +443,12 @@ def handle_admin_action(update: Update, context: CallbackContext) -> None:
     
     if not is_competition_active():
         query.edit_message_text(
-            "⏰ *Competition Ended* ⏰\n\n"
-            "This competition has concluded. No more approvals can be processed.\n\n"
-            "🌟 *Thank you for your admin support!* 🌟",
+            "✨ *Experience Concluded* ✨\n\n"
+            "Dearest curator,\n\n"
+            "This exclusive gathering has reached its beautiful conclusion. "
+            "No further reservations can be processed at this time.\n\n"
+            "Thank you for your elegant stewardship of this TMZ BRAND experience.\n\n"
+            "With appreciation,\n*TMZ BRAND* 🌟",
             parse_mode=ParseMode.MARKDOWN
         )
         return
@@ -272,9 +459,13 @@ def handle_admin_action(update: Update, context: CallbackContext) -> None:
     
     if len(registered_users) >= MAX_REGISTRATIONS and action == 'approve':
         query.edit_message_text(
-            "🚫 *Maximum Capacity Reached!* 🚫\n\n"
-            "All 10 VIP spots have been filled! 🎯\n\n"
-            "🌟 *Competition is now full and ready to begin!* 🌟",
+            "💎 *Exclusive Capacity Achieved* 💎\n\n"
+            "Dearest curator,\n\n"
+            "Our intimate gathering of 10 distinguished participants has reached "
+            "its elegant capacity. The experience is now perfectly curated.\n\n"
+            "The stage is set for an extraordinary display of intellectual elegance "
+            "among our exclusive circle of brilliant minds.\n\n"
+            "With sophisticated satisfaction,\n*TMZ BRAND* 🌟",
             parse_mode=ParseMode.MARKDOWN
         )
         return
@@ -286,17 +477,24 @@ def handle_admin_action(update: Update, context: CallbackContext) -> None:
         try:
             context.bot.send_message(
                 chat_id=user_id,
-                text="🎊 *CONGRATULATIONS! WELCOME TO THE VIP QUIZ!* 🎊\n\n"
-                     "🌟 *You're IN!* 🌟\n\n"
-                     "✅ *Your payment has been verified successfully!*\n\n"
-                     "🎯 *WHAT TO DO NEXT:*\n"
-                     "• 📱 *Go to Telegram Search* 🔍\n"
-                     "• 🔗 *Search and join:* `TMZBRAND_VIP_OFFICIAL`\n"
-                     "• 💫 *Or click this link:* {vip_link}\n\n"
-                     "🏆 *VIP Group Access:* {vip_link}\n\n"
-                     "⏰ *Competition ends on* {end_time}\n\n"
-                     "🚀 *Let the games begin! We're excited to have you!* 🚀\n\n"
-                     "🌈 *Best of luck! May the best mind win!* 🌈".format(
+                text="🎩 *WELCOME TO THE TMZ BRAND INNER CIRCLE* 🎩\n\n"
+                     "Dearest distinguished participant,\n\n"
+                     "🌟 *The Gates to Excellence Have Opened!* 🌟\n\n"
+                     "✨ *Your Reservation is Confirmed!*\n\n"
+                     "We are profoundly delighted to welcome you into our exclusive "
+                     "gathering of brilliant minds. Your place among the exceptional "
+                     "is now officially secured.\n\n"
+                     "💫 *YOUR ELEGANT NEXT STEPS:*\n"
+                     "• 📱 *Proceed to Telegram Search* 🔍\n"
+                     "• 🎭 *Search for our exclusive salon:* `TMZBRAND_VIP_OFFICIAL`\n"
+                     "• 💎 *Or grace us with your presence via:* {vip_link}\n\n"
+                     "🏆 *Your Exclusive Access:* {vip_link}\n\n"
+                     "📅 *Grand Finale:* {end_time}\n\n"
+                     "Prepare to engage in an experience worthy of your capabilities. "
+                     "Our TMZ BRAND hosts await your arrival with anticipation.\n\n"
+                     "May your journey with us be filled with intellectual elegance, "
+                     "sophisticated engagement, and the prestigious recognition you deserve.\n\n"
+                     "With the utmost elegance and anticipation,\n*The TMZ BRAND Team* 💫".format(
                          vip_link=VIP_GROUP_LINK,
                          end_time=COMPETITION_END_TIME.strftime('%B %d, %Y at %I:%M %p')
                      ),
@@ -307,9 +505,11 @@ def handle_admin_action(update: Update, context: CallbackContext) -> None:
                 try:
                     context.bot.send_message(
                         chat_id=VIP_GROUP_ID,
-                        text=f"🎉 *NEW VIP MEMBER ALERT!* 🎉\n\n"
-                             f"🌟 Please welcome @{user_data[user_id]['username']} to our VIP Quiz Competition! 🌟\n\n"
-                             f"💫 Let's give them a warm welcome and get ready for some amazing quiz action! 🎯"
+                        text=f"🎭 *NEW DISTINGUISHED ARRIVAL* 🎭\n\n"
+                             f"💫 Esteemed members, please welcome @{user_data[user_id]['username']} "
+                             f"to our exclusive TMZ BRAND gathering! 🌟\n\n"
+                             f"Another brilliant mind graces our elegant circle. "
+                             f"Let us prepare for an extraordinary experience together! 🎩"
                     )
                 except Exception:
                     pass
@@ -318,12 +518,14 @@ def handle_admin_action(update: Update, context: CallbackContext) -> None:
             pass
         
         query.edit_message_text(
-            f"✅ *SUCCESSFULLY APPROVED!* ✅\n\n"
-            f"👤 *User:* @{user_data[user_id]['username']}\n"
-            f"🎯 *VIP Spot Confirmed!* 🎯\n\n"
-            f"📊 *Registration Status:* {len(registered_users)}/{MAX_REGISTRATIONS}\n"
-            f"⏰ *Competition Ends:* {COMPETITION_END_TIME.strftime('%B %d, %Y at %I:%M %p')}\n\n"
-            f"🌟 *Another amazing participant joined!* 🌟",
+            f"💎 *ELEGANTLY APPROVED* 💎\n\n"
+            f"🎩 *Distinguished Participant:* @{user_data[user_id]['username']}\n"
+            f"🌟 *Exclusive Place Confirmed!* 🌟\n\n"
+            f"📊 *Current Gathering:* {len(registered_users)}/{MAX_REGISTRATIONS}\n"
+            f"📅 *Grand Finale:* {COMPETITION_END_TIME.strftime('%B %d, %Y at %I:%M %p')}\n\n"
+            f"Our exclusive circle grows more brilliant with each distinguished addition. "
+            f"The stage is set for an extraordinary experience.\n\n"
+            f"With sophisticated satisfaction,\n*TMZ BRAND* 💫",
             parse_mode=ParseMode.MARKDOWN
         )
         
@@ -331,18 +533,20 @@ def handle_admin_action(update: Update, context: CallbackContext) -> None:
         try:
             context.bot.send_message(
                 chat_id=user_id,
-                text="🔍 *PAYMENT VERIFICATION NEEDED* 🔍\n\n"
-                     "❌ *We couldn't verify your payment just yet.*\n\n"
-                     "💡 *This could be because:*\n"
-                     "• Payment details weren't clear in the screenshot 📸\n"
-                     "• Wrong amount was transferred 💰\n"
-                     "• Bank details were incorrect 🏦\n\n"
-                     "🔄 *No worries! You can try again:*\n"
-                     "1. Double-check the bank details\n"
-                     "2. Take a clearer screenshot\n"
-                     "3. Upload it again\n\n"
-                     "🌟 *We want you to join us!* 🌟\n"
-                     "Let's get this sorted so you can participate! 🎯",
+                text="🎭 *REFINEMENT REQUESTED* 🎭\n\n"
+                     "Dearest future participant,\n\n"
+                     "We require a moment of elegant clarification regarding your reservation details.\n\n"
+                     "💫 *Possible Areas for Refinement:*\n"
+                     "• Transaction details require clearer visibility\n"
+                     "• Contribution amount needs verification\n"
+                     "• Banking information alignment\n\n"
+                     "🔄 *Our Elegant Solution:*\n"
+                     "1. Review the banking details with careful attention\n"
+                     "2. Capture a more refined image of your confirmation\n"
+                     "3. Gracefully resubmit for our consideration\n\n"
+                     "We are genuinely excited about welcoming you to our exclusive gathering "
+                     "and want to ensure every detail reflects the TMZ BRAND standard of excellence.\n\n"
+                     "With elegant anticipation,\n*TMZ BRAND* 🌟",
                 parse_mode=ParseMode.MARKDOWN
             )
         except Exception:
@@ -352,9 +556,12 @@ def handle_admin_action(update: Update, context: CallbackContext) -> None:
             user_data[user_id]['submitted'] = False
         
         query.edit_message_text(
-            "🔄 *PAYMENT NEEDS REVIEW* 🔄\n\n"
-            "❌ The user has been notified to provide clearer payment proof.\n\n"
-            "💫 They can try again with better documentation!",
+            "🔍 *ELEGANT CLARIFICATION REQUESTED* 🔍\n\n"
+            "The distinguished participant has been gracefully notified to provide "
+            "more refined reservation details.\n\n"
+            "Their journey toward exclusive access continues with our guidance "
+            "and their commitment to excellence.\n\n"
+            "With sophisticated patience,\n*TMZ BRAND* 💎",
             parse_mode=ParseMode.MARKDOWN
         )
 
@@ -367,18 +574,20 @@ def show_stats(update: Update, context: CallbackContext) -> None:
     hours_remaining = int(time_remaining.total_seconds() // 3600)
     minutes_remaining = int((time_remaining.total_seconds() % 3600) // 60)
     
-    participants_list = "\n".join([f"🎯 @{user_data[uid]['username']}" for uid in registered_users if uid in user_data]) or "🌟 No participants yet"
+    participants_list = "\n".join([f"🎩 @{user_data[uid]['username']}" for uid in registered_users if uid in user_data]) or "💫 No distinguished participants yet"
     
     stats_text = (
-        f"📊 *VIP QUIZ DASHBOARD* 📊\n\n"
-        f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
-        f"👥 *Registered Participants:* {len(registered_users)}/{MAX_REGISTRATIONS}\n"
-        f"⏰ *Competition Ends:* {COMPETITION_END_TIME.strftime('%B %d, %Y at %I:%M %p')}\n"
-        f"🕒 *Time Remaining:* {hours_remaining}h {minutes_remaining}m\n"
-        f"🎯 *Status:* {'🚀 ACTIVE' if is_competition_active() else '✅ COMPLETED'}\n"
-        f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
-        f"🌟 *AMAZING PARTICIPANTS:* 🌟\n{participants_list}\n\n"
-        f"💫 *Let the quiz begin!* 💫"
+        f"💎 *TMZ BRAND VIP DASHBOARD* 💎\n\n"
+        f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"🎭 *Distinguished Participants:* {len(registered_users)}/{MAX_REGISTRATIONS}\n"
+        f"📅 *Grand Finale:* {COMPETITION_END_TIME.strftime('%B %d, %Y at %I:%M %p')}\n"
+        f"⏰ *Elegant Countdown:* {hours_remaining}h {minutes_remaining}m\n"
+        f"🌟 *Experience Status:* {'🎩 CURATED & ACTIVE' if is_competition_active() else '✨ BEAUTIFULLY CONCLUDED'}\n"
+        f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+        f"💫 *OUR DISTINGUISHED GATHERING:* 💫\n{participants_list}\n\n"
+        f"The stage is set for intellectual elegance and sophisticated engagement. "
+        f"Each participant adds to the brilliance of our exclusive circle.\n\n"
+        f"With curated excellence,\n*TMZ BRAND* 🌟"
     )
     
     update.message.reply_text(stats_text, parse_mode=ParseMode.MARKDOWN)
@@ -397,10 +606,12 @@ def end_competition(update: Update, context: CallbackContext) -> None:
     messaged_in_groups.clear()
     
     update.message.reply_text(
-        "🎊 *COMPETITION CONCLUDED!* 🎊\n\n"
-        "✅ *All participant data has been cleared successfully!*\n\n"
-        "🌟 *The stage is set for our next amazing competition!* 🌟\n\n"
-        "💫 *Ready to welcome new champions!* 💫",
+        "✨ *EXPERIENCE BEAUTIFULLY CONCLUDED* ✨\n\n"
+        "💎 *All elegant data has been gracefully archived!*\n\n"
+        "The stage is now cleared for our next exclusive TMZ BRAND experience. "
+        "The memories of brilliant minds and sophisticated engagement will inspire "
+        "our future curated gatherings.\n\n"
+        "With gratitude and anticipation for future excellence,\n*TMZ BRAND* 🌟",
         parse_mode=ParseMode.MARKDOWN
     )
 
@@ -418,26 +629,31 @@ def set_end_time(update: Update, context: CallbackContext) -> None:
             COMPETITION_END_TIME = new_end_time
             
             update.message.reply_text(
-                f"⏰ *COMPETITION SCHEDULE UPDATED!* ⏰\n\n"
-                f"✅ *New end time set successfully!*\n\n"
-                f"📅 *Competition now ends:* {COMPETITION_END_TIME.strftime('%B %d, %Y at %I:%M %p')}\n\n"
-                f"🌟 *Let the excitement continue!* 🌟",
+                f"📅 *EXPERIENCE RESCHEDULED WITH ELEGANCE* 📅\n\n"
+                f"💫 *New Grand Finale successfully curated!*\n\n"
+                f"🎭 *The experience now concludes:* {COMPETITION_END_TIME.strftime('%B %d, %Y at %I:%M %p')}\n\n"
+                f"Our distinguished participants will appreciate the extended opportunity "
+                f"for intellectual engagement and sophisticated celebration.\n\n"
+                f"With curated timing,\n*TMZ BRAND* 🌟",
                 parse_mode=ParseMode.MARKDOWN
             )
         except ValueError:
             update.message.reply_text(
-                "❌ *Oops! Format Issue* ❌\n\n"
-                "💡 *Please use:* /settime YYYY-MM-DD HH:MM\n\n"
-                "🎯 *Example:* /settime 2024-12-25 22:00\n\n"
-                "🌟 *Let's get this right!* 🌟",
+                "🎭 *Elegant Format Required* 🎭\n\n"
+                "💎 *Please use:* /settime YYYY-MM-DD HH:MM\n\n"
+                "✨ *Example:* /settime 2024-12-25 22:00\n\n"
+                "Our sophisticated scheduling requires this specific elegant format "
+                "to ensure perfect timing for our exclusive gathering.\n\n"
+                "With appreciation for precision,\n*TMZ BRAND* 💫",
                 parse_mode=ParseMode.MARKDOWN
             )
     else:
         update.message.reply_text(
-            "❌ *Missing Time Details* ❌\n\n"
-            "💡 *Please provide the end time:* /settime YYYY-MM-DD HH:MM\n\n"
-            "🎯 *Example:* /settime 2024-12-25 22:00\n\n"
-            "🌟 *We need this to schedule properly!* 🌟",
+            "💎 *Timing Details Required* 💎\n\n"
+            "🎭 *Please provide the elegant conclusion time:* /settime YYYY-MM-DD HH:MM\n\n"
+            "✨ *Example:* /settime 2024-12-25 22:00\n\n"
+            "The sophistication of our experience depends on perfectly curated timing.\n\n"
+            "With anticipation for precision,\n*TMZ BRAND* 🌟",
             parse_mode=ParseMode.MARKDOWN
         )
 
@@ -445,11 +661,17 @@ def set_group_id(update: Update, context: CallbackContext) -> None:
     global VIP_GROUP_ID
     if update.message.chat.type in ['group', 'supergroup']:
         VIP_GROUP_ID = update.message.chat.id
+        # Silent configuration - no message sent to the group
+        # Only log it for admin reference
         if update.effective_user.id == ADMIN_USER_ID:
-            update.message.reply_text(
-                f"🎉 *VIP GROUP CONFIGURED!* 🎉\n\n"
-                f"✅ *Group ID set to:* {VIP_GROUP_ID}\n\n"
-                f"🌟 *Ready to welcome amazing participants!* 🌟",
+            # Send confirmation privately to admin instead of in group
+            context.bot.send_message(
+                chat_id=ADMIN_USER_ID,
+                text=f"💎 *VIP GATHERING SPACE CONFIGURED* 💎\n\n"
+                     f"🎭 *Elegant Space ID:* {VIP_GROUP_ID}\n\n"
+                     f"Our exclusive circle now has its perfectly curated venue. "
+                     f"Ready to welcome distinguished participants with sophistication and grace.\n\n"
+                     f"With elegant preparation,\n*TMZ BRAND* 🌟",
                 parse_mode=ParseMode.MARKDOWN
             )
 
@@ -459,7 +681,7 @@ def check_competition_end(context: CallbackContext):
         registered_users.clear()
         user_data.clear()
         messaged_in_groups.clear()
-        logging.info("Competition ended - all data cleared automatically")
+        logging.info("Experience concluded - all elegant data archived automatically")
 
 def main() -> None:
     # Add web server for Render
@@ -467,7 +689,7 @@ def main() -> None:
 
     @app.route('/')
     def home():
-        return "🤖 TMZ VIP Bot is running!"
+        return "🤖 TMZ BRAND VIP Experience Bot is elegantly running!"
 
     # Start web server in background
     import threading
@@ -488,16 +710,18 @@ def main() -> None:
     dp.add_handler(CommandHandler("settime", set_end_time))
     dp.add_handler(MessageHandler(Filters.photo | Filters.document, handle_payment_proof))
     dp.add_handler(MessageHandler(Filters.chat_type.groups, set_group_id))
-    dp.add_handler(CallbackQueryHandler(handle_paid_confirmation, pattern="^paid_confirmation$"))
+    dp.add_handler(CallbackQueryHandler(handle_discover_experience, pattern="^discover_experience$"))
+    dp.add_handler(CallbackQueryHandler(handle_learn_journey, pattern="^learn_journey$"))
+    dp.add_handler(CallbackQueryHandler(handle_secure_place, pattern="^secure_place$"))
     dp.add_handler(CallbackQueryHandler(handle_admin_action, pattern="^(approve|reject)_"))
 
     j = updater.job_queue
     j.run_repeating(check_competition_end, interval=60, first=10)
 
-    print("🎊 TMZ VIP BOT IS LIVE! 🎊")
-    print(f"⏰ Competition ends: {COMPETITION_END_TIME}")
-    print(f"🔗 VIP Group: {VIP_GROUP_LINK}")
-    print("🌟 Ready to welcome amazing participants! 🌟")
+    print("💎 TMZ BRAND VIP EXPERIENCE BOT IS ELEGANTLY LIVE! 💎")
+    print(f"🎭 Grand Finale: {COMPETITION_END_TIME}")
+    print(f"🌟 Exclusive Gathering: {VIP_GROUP_LINK}")
+    print("💫 Ready to curate extraordinary experiences for distinguished minds! 🌟")
     
     updater.start_polling()
     updater.idle()
