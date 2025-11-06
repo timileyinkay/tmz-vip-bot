@@ -4,16 +4,22 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, CallbackQueryHandler
 from telegram.parsemode import ParseMode
 from datetime import datetime, timedelta
+from flask import Flask
 
 # Bot Configuration - Use environment variables for deployment
 BOT_TOKEN = os.environ.get('BOT_TOKEN', "7703532839:AAG5yNnTAye8zmV58MnWLnuorBg8gaFpbB0")
 ADMIN_USER_ID = int(os.environ.get('ADMIN_USER_ID', "6011041717"))
 VIP_GROUP_ID = os.environ.get('VIP_GROUP_ID', "-1002750986636")  # Add your group ID here
+VIP_GROUP_LINK = "https://t.me/TMZBRAND_VIP_OFFICIAL"  # VIP group link
+PORT = int(os.environ.get('PORT', 8080))
 
 # Store user data and registration count
 user_data = {}
 registered_users = set()
 MAX_REGISTRATIONS = 10
+
+# Store users who have already been messaged in groups to prevent spam
+messaged_in_groups = set()
 
 # Set competition end date and time
 COMPETITION_END_TIME = datetime(2024, 12, 25, 22, 0, 0)
@@ -30,6 +36,12 @@ def is_competition_active():
 
 def start(update: Update, context: CallbackContext) -> None:
     user = update.effective_user
+    
+    # Check if this is a group message and we've already replied
+    if update.message.chat.type in ['group', 'supergroup']:
+        if user.id in messaged_in_groups:
+            return  # Don't reply again in groups
+        messaged_in_groups.add(user.id)
     
     if not is_competition_active():
         update.message.reply_text(
@@ -179,7 +191,7 @@ def handle_payment_proof(update: Update, context: CallbackContext) -> None:
         update.message.reply_text(
             "🎉 *Welcome Back!* 🎉\n\n"
             "You're already part of our VIP Quiz family! 🏆\n\n"
-            "💫 Check the VIP group for all the exciting details!\n"
+            f"💫 Join our VIP group here: {VIP_GROUP_LINK}\n"
             "Get ready to showcase your brilliance! ✨",
             parse_mode=ParseMode.MARKDOWN
         )
@@ -277,13 +289,15 @@ def handle_admin_action(update: Update, context: CallbackContext) -> None:
                 text="🎊 *CONGRATULATIONS! WELCOME TO THE VIP QUIZ!* 🎊\n\n"
                      "🌟 *You're IN!* 🌟\n\n"
                      "✅ *Your payment has been verified successfully!*\n\n"
-                     "🎯 *What's next?*\n"
-                     "• You now have VIP access to our exclusive quiz! 🏆\n"
-                     "• Check the VIP group for competition details 📋\n"
-                     "• Get ready to showcase your amazing skills! 💫\n\n"
+                     "🎯 *WHAT TO DO NEXT:*\n"
+                     "• 📱 *Go to Telegram Search* 🔍\n"
+                     "• 🔗 *Search and join:* `TMZBRAND_VIP_OFFICIAL`\n"
+                     "• 💫 *Or click this link:* {vip_link}\n\n"
+                     "🏆 *VIP Group Access:* {vip_link}\n\n"
                      "⏰ *Competition ends on* {end_time}\n\n"
                      "🚀 *Let the games begin! We're excited to have you!* 🚀\n\n"
                      "🌈 *Best of luck! May the best mind win!* 🌈".format(
+                         vip_link=VIP_GROUP_LINK,
                          end_time=COMPETITION_END_TIME.strftime('%B %d, %Y at %I:%M %p')
                      ),
                 parse_mode=ParseMode.MARKDOWN
@@ -380,6 +394,7 @@ def end_competition(update: Update, context: CallbackContext) -> None:
     
     registered_users.clear()
     user_data.clear()
+    messaged_in_groups.clear()
     
     update.message.reply_text(
         "🎊 *COMPETITION CONCLUDED!* 🎊\n\n"
@@ -443,9 +458,27 @@ def check_competition_end(context: CallbackContext):
     if not is_competition_active() and registered_users:
         registered_users.clear()
         user_data.clear()
+        messaged_in_groups.clear()
         logging.info("Competition ended - all data cleared automatically")
 
 def main() -> None:
+    # Add web server for Render
+    app = Flask(__name__)
+
+    @app.route('/')
+    def home():
+        return "🤖 TMZ VIP Bot is running!"
+
+    # Start web server in background
+    import threading
+    def run_flask():
+        app.run(host='0.0.0.0', port=PORT)
+    
+    flask_thread = threading.Thread(target=run_flask)
+    flask_thread.daemon = True
+    flask_thread.start()
+
+    # Initialize bot
     updater = Updater(BOT_TOKEN, use_context=True)
     dp = updater.dispatcher
 
@@ -463,6 +496,7 @@ def main() -> None:
 
     print("🎊 TMZ VIP BOT IS LIVE! 🎊")
     print(f"⏰ Competition ends: {COMPETITION_END_TIME}")
+    print(f"🔗 VIP Group: {VIP_GROUP_LINK}")
     print("🌟 Ready to welcome amazing participants! 🌟")
     
     updater.start_polling()
