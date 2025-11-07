@@ -234,15 +234,10 @@ def handle_payment_details(update: Update, context: CallbackContext) -> None:
 • You get VIP group access
 • Ready to compete!
 
-🔗 **VIP Group:** {vip_link}
-
 📅 **Competition Ends:** {end_time}
 
 Upload your payment screenshot now!
-""".format(
-        vip_link=VIP_GROUP_LINK,
-        end_time=COMPETITION_END_TIME.strftime('%B %d, %Y at %I:%M %p')
-    )
+""".format(end_time=COMPETITION_END_TIME.strftime('%B %d, %Y at %I:%M %p'))
     
     query.edit_message_text(payment_text, parse_mode=ParseMode.MARKDOWN)
 
@@ -274,7 +269,7 @@ def handle_payment_proof(update: Update, context: CallbackContext) -> None:
         update.message.reply_text(
             "✅ *Already Registered*\n\n"
             "You're already in the VIP competition!\n\n"
-            f"Join group: {VIP_GROUP_LINK}",
+            "Check your previous messages for the VIP group link.",
             parse_mode=ParseMode.MARKDOWN
         )
         return
@@ -361,18 +356,19 @@ def handle_admin_approval(update: Update, context: CallbackContext) -> None:
             user_data[user_id]['submitted'] = True
         
         try:
-            # Send approval message to user
+            # Send approval message to user WITH VIP LINK
             context.bot.send_message(
                 chat_id=user_id,
                 text="🎉 *APPROVED!*\n\n"
                      "Welcome to TMZ BRAND VIP Quiz!\n\n"
                      "✅ Payment verified successfully\n"
                      "🎯 You now have VIP access\n\n"
-                     "📱 *Next Steps:*\n"
-                     "1. Go to Telegram Search\n"
-                     "2. Search: TMZBRAND_VIP_OFFICIAL\n"
-                     "3. Join the group\n\n"
-                     f"🔗 Or click: {VIP_GROUP_LINK}\n\n"
+                     "📱 *Join VIP Group Now:*\n"
+                     f"🔗 {VIP_GROUP_LINK}\n\n"
+                     "*Or search manually:*\n"
+                     "• Go to Telegram Search\n" 
+                     "• Search: @TMZBRAND_VIP_OFFICIAL\n"
+                     "• Join the group\n\n"
                      "Good luck in the competition! 🏆",
                 parse_mode=ParseMode.MARKDOWN
             )
@@ -397,7 +393,7 @@ def handle_admin_approval(update: Update, context: CallbackContext) -> None:
             f"✅ *Approved Successfully!*\n\n"
             f"User: @{username}\n"
             f"Spots filled: {len(registered_users)}/{MAX_REGISTRATIONS}\n\n"
-            f"User has been notified and added to VIP list.",
+            f"User has been notified and VIP group link sent!",
             parse_mode=ParseMode.MARKDOWN
         )
         
@@ -542,6 +538,7 @@ def main() -> None:
 
     print("TMZ VIP BOT IS LIVE!")
     print(f"Competition ends: {COMPETITION_END_TIME}")
+    print(f"VIP Group: {VIP_GROUP_LINK}")
     
     updater.start_polling()
     updater.idle()
