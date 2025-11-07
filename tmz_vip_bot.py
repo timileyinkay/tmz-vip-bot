@@ -11,6 +11,7 @@ BOT_TOKEN = os.environ.get('BOT_TOKEN', "7703532839:AAG5yNnTAye8zmV58MnWLnuorBg8
 ADMIN_USER_ID = int(os.environ.get('ADMIN_USER_ID', "6011041717"))
 VIP_GROUP_ID = os.environ.get('VIP_GROUP_ID', "-1002750986636")
 VIP_GROUP_LINK = "https://t.me/TMZBRAND_VIP_OFFICIAL"
+VIP_GROUP_USERNAME = "@TMZBRAND_VIP_OFFICIAL"  # Added for manual search
 PORT = int(os.environ.get('PORT', 8080))
 
 # Store user data
@@ -356,21 +357,29 @@ def handle_admin_approval(update: Update, context: CallbackContext) -> None:
             user_data[user_id]['submitted'] = True
         
         try:
-            # Send approval message to user WITH VIP LINK
+            # Send approval message to user WITH VIP LINK using HTML formatting
+            approval_message = f"""
+🎉 <b>APPROVED!</b>
+
+Welcome to TMZ BRAND VIP Quiz!
+
+✅ Payment verified successfully
+🎯 You now have VIP access
+
+📱 <b>Join VIP Group Now:</b>
+🔗 <a href="{VIP_GROUP_LINK}">{VIP_GROUP_LINK}</a>
+
+<b>Or search manually:</b>
+• Go to Telegram Search
+• Search: {VIP_GROUP_USERNAME}
+• Join the group
+
+Good luck in the competition! 🏆
+"""
             context.bot.send_message(
                 chat_id=user_id,
-                text="🎉 *APPROVED!*\n\n"
-                     "Welcome to TMZ BRAND VIP Quiz!\n\n"
-                     "✅ Payment verified successfully\n"
-                     "🎯 You now have VIP access\n\n"
-                     "📱 *Join VIP Group Now:*\n"
-                     f"🔗 {VIP_GROUP_LINK}\n\n"
-                     "*Or search manually:*\n"
-                     "• Go to Telegram Search\n" 
-                     "• Search: @TMZBRAND_VIP_OFFICIAL\n"
-                     "• Join the group\n\n"
-                     "Good luck in the competition! 🏆",
-                parse_mode=ParseMode.MARKDOWN
+                text=approval_message,
+                parse_mode=ParseMode.HTML
             )
             
             # Notify VIP group
