@@ -219,7 +219,7 @@ def handle_payment_details(update: Update, context: CallbackContext) -> None:
 🏦 **Bank Details:**
 • **Bank:** OPAY
 • **Name:** OLUWATOBILOBA KEHINDE
-• **Number:** 8079304530
+• **Account Number:** 8079304530
 • **Amount:** ₦2,000
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
