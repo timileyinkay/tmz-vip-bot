@@ -327,7 +327,7 @@ def handle_payment_proof(update: Update, context: CallbackContext) -> None:
             parse_mode=ParseMode.MARKDOWN
         )
 
-def handle_admin_action(update: Update, context: CallbackContext) -> None:
+def handle_admin_approval(update: Update, context: CallbackContext) -> None:
     query = update.callback_query
     query.answer()
     
@@ -336,18 +336,32 @@ def handle_admin_action(update: Update, context: CallbackContext) -> None:
         return
     
     data = query.data
-    action, user_id_str = data.split('_')
-    user_id = int(user_id_str)
+    
+    # Extract user_id from callback data (approve_123456 or reject_123456)
+    if data.startswith('approve_'):
+        user_id = int(data.split('_')[1])
+        action = 'approve'
+    elif data.startswith('reject_'):
+        user_id = int(data.split('_')[1])
+        action = 'reject'
+    else:
+        return
     
     if len(registered_users) >= MAX_REGISTRATIONS and action == 'approve':
         query.edit_message_text("All 10 spots are filled!")
         return
     
     if action == 'approve':
+        # Add user to registered users
         registered_users.add(user_id)
-        user_data[user_id]['approved'] = True
+        
+        # Update user data
+        if user_id in user_data:
+            user_data[user_id]['approved'] = True
+            user_data[user_id]['submitted'] = True
         
         try:
+            # Send approval message to user
             context.bot.send_message(
                 chat_id=user_id,
                 text="🎉 *APPROVED!*\n\n"
@@ -363,21 +377,27 @@ def handle_admin_action(update: Update, context: CallbackContext) -> None:
                 parse_mode=ParseMode.MARKDOWN
             )
             
+            # Notify VIP group
             if VIP_GROUP_ID:
                 try:
+                    username = user_data[user_id].get('username', 'New User')
                     context.bot.send_message(
                         chat_id=VIP_GROUP_ID,
-                        text=f"🎉 New VIP member: @{user_data[user_id]['username']}!"
+                        text=f"🎉 New VIP member: @{username}! Welcome to the competition! 🏆"
                     )
-                except Exception:
-                    pass
+                except Exception as e:
+                    print(f"Error sending to group: {e}")
                     
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"Error sending approval message: {e}")
         
+        # Update admin message
+        username = user_data[user_id].get('username', 'User') if user_id in user_data else 'User'
         query.edit_message_text(
-            f"✅ Approved: @{user_data[user_id]['username']}\n"
-            f"Spots: {len(registered_users)}/{MAX_REGISTRATIONS}",
+            f"✅ *Approved Successfully!*\n\n"
+            f"User: @{username}\n"
+            f"Spots filled: {len(registered_users)}/{MAX_REGISTRATIONS}\n\n"
+            f"User has been notified and added to VIP list.",
             parse_mode=ParseMode.MARKDOWN
         )
         
@@ -394,13 +414,18 @@ def handle_admin_action(update: Update, context: CallbackContext) -> None:
                      "Upload again with better image.",
                 parse_mode=ParseMode.MARKDOWN
             )
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"Error sending rejection message: {e}")
         
+        # Reset user submission status
         if user_id in user_data:
             user_data[user_id]['submitted'] = False
         
-        query.edit_message_text("User asked to provide better proof.")
+        query.edit_message_text(
+            "❌ *User Rejected*\n\n"
+            "User has been asked to provide better payment proof.",
+            parse_mode=ParseMode.MARKDOWN
+        )
 
 def show_stats(update: Update, context: CallbackContext) -> None:
     user = update.effective_user
@@ -508,7 +533,9 @@ def main() -> None:
     dp.add_handler(CallbackQueryHandler(handle_how_to_join, pattern="^how_to_join$"))
     dp.add_handler(CallbackQueryHandler(handle_payment_details, pattern="^payment_details$"))
     dp.add_handler(CallbackQueryHandler(handle_back_to_start, pattern="^back_to_start$"))
-    dp.add_handler(CallbackQueryHandler(handle_admin_action, pattern="^(approve|reject)_"))
+    
+    # FIXED: Use a single handler for both approve and reject with proper pattern
+    dp.add_handler(CallbackQueryHandler(handle_admin_approval, pattern="^(approve|reject)_"))
 
     j = updater.job_queue
     j.run_repeating(check_competition_end, interval=60, first=10)
