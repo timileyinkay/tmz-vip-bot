@@ -11,7 +11,7 @@ BOT_TOKEN = os.environ.get('BOT_TOKEN', "7703532839:AAG5yNnTAye8zmV58MnWLnuorBg8
 ADMIN_USER_ID = int(os.environ.get('ADMIN_USER_ID', "6011041717"))
 VIP_GROUP_ID = os.environ.get('VIP_GROUP_ID', "-1002750986636")
 VIP_GROUP_LINK = "https://t.me/TMZBRAND_VIP_OFFICIAL"
-VIP_GROUP_USERNAME = "@TMZBRAND_VIP_OFFICIAL"  # Added for manual search
+VIP_GROUP_USERNAME = "@TMZBRAND_VIP_OFFICIAL"
 PORT = int(os.environ.get('PORT', 8080))
 
 # Store user data
@@ -32,6 +32,312 @@ logging.basicConfig(
 def is_competition_active():
     return datetime.now() < COMPETITION_END_TIME
 
+def is_admin(user_id):
+    return user_id == ADMIN_USER_ID
+
+# Admin Panel Functions
+def admin_panel(update: Update, context: CallbackContext) -> None:
+    if not is_admin(update.effective_user.id):
+        return
+    
+    time_remaining = COMPETITION_END_TIME - datetime.now()
+    hours_remaining = int(time_remaining.total_seconds() // 3600)
+    minutes_remaining = int((time_remaining.total_seconds() % 3600) // 60)
+    
+    stats_text = f"""
+🛠️ *ADMIN PANEL*
+
+📊 Statistics:
+• Participants: {len(registered_users)}/{MAX_REGISTRATIONS}
+• Time Left: {hours_remaining}h {minutes_remaining}m
+• Status: {'🟢 Active' if is_competition_active() else '🔴 Ended'}
+
+⚡ Quick Actions:
+"""
+    
+    keyboard = [
+        [InlineKeyboardButton("📊 View Stats", callback_data="admin_stats"),
+         InlineKeyboardButton("👥 View Participants", callback_data="admin_participants")],
+        [InlineKeyboardButton("⏰ Set End Time", callback_data="admin_set_time"),
+         InlineKeyboardButton("🔚 End Competition", callback_data="admin_end_comp")],
+        [InlineKeyboardButton("🔄 Reset Competition", callback_data="admin_reset"),
+         InlineKeyboardButton("📢 Broadcast", callback_data="admin_broadcast")],
+        [InlineKeyboardButton("❌ Close Panel", callback_data="admin_close")]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    update.message.reply_text(stats_text, parse_mode=ParseMode.MARKDOWN, reply_markup=reply_markup)
+
+def handle_admin_stats(update: Update, context: CallbackContext) -> None:
+    query = update.callback_query
+    if not is_admin(query.from_user.id):
+        return
+    
+    query.answer()
+    
+    time_remaining = COMPETITION_END_TIME - datetime.now()
+    hours_remaining = int(time_remaining.total_seconds() // 3600)
+    minutes_remaining = int((time_remaining.total_seconds() % 3600) // 60)
+    
+    participants_list = "\n".join([f"• @{user_data[uid]['username']} (ID: {uid})" for uid in registered_users if uid in user_data]) or "No participants yet"
+    
+    pending_approvals = len([uid for uid in user_data if user_data[uid].get('submitted') and not user_data[uid].get('approved')])
+    
+    stats_text = f"""
+📊 *DETAILED STATISTICS*
+
+👥 Participants: {len(registered_users)}/{MAX_REGISTRATIONS}
+⏰ Time Left: {hours_remaining}h {minutes_remaining}m
+🔄 Status: {'🟢 ACTIVE' if is_competition_active() else '🔴 ENDED'}
+📝 Pending Approvals: {pending_approvals}
+📅 Ends: {COMPETITION_END_TIME.strftime('%B %d, %Y at %I:%M %p')}
+
+🏆 VIP Members:
+{participants_list}
+"""
+    
+    keyboard = [
+        [InlineKeyboardButton("🔙 Back to Admin", callback_data="admin_back"),
+        [InlineKeyboardButton("❌ Close", callback_data="admin_close")]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    query.edit_message_text(stats_text, parse_mode=ParseMode.MARKDOWN, reply_markup=reply_markup)
+
+def handle_admin_participants(update: Update, context: CallbackContext) -> None:
+    query = update.callback_query
+    if not is_admin(query.from_user.id):
+        return
+    
+    query.answer()
+    
+    if not registered_users:
+        participants_text = "No participants registered yet."
+    else:
+        participants_list = []
+        for uid in registered_users:
+            if uid in user_data:
+                user_info = user_data[uid]
+                participants_list.append(f"• @{user_info['username']} (ID: {uid})")
+        
+        participants_text = "\n".join(participants_list)
+    
+    participants_message = f"""
+👥 *REGISTERED PARTICIPANTS*
+
+Total: {len(registered_users)}/{MAX_REGISTRATIONS}
+
+{participants_text}
+"""
+    
+    keyboard = [
+        [InlineKeyboardButton("📊 View Stats", callback_data="admin_stats"),
+         InlineKeyboardButton("🔙 Back to Admin", callback_data="admin_back")],
+        [InlineKeyboardButton("❌ Close", callback_data="admin_close")]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    query.edit_message_text(participants_message, parse_mode=ParseMode.MARKDOWN, reply_markup=reply_markup)
+
+def handle_admin_set_time(update: Update, context: CallbackContext) -> None:
+    query = update.callback_query
+    if not is_admin(query.from_user.id):
+        return
+    
+    query.answer()
+    
+    set_time_text = """
+⏰ *SET COMPETITION END TIME*
+
+Current End Time: {current_time}
+
+To set new end time, use:
+/settime YYYY-MM-DD HH:MM
+
+Example:
+/settime 2024-12-31 23:59
+"""
+    
+    keyboard = [
+        [InlineKeyboardButton("🔙 Back to Admin", callback_data="admin_back"),
+         InlineKeyboardButton("❌ Close", callback_data="admin_close")]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    query.edit_message_text(
+        set_time_text.format(current_time=COMPETITION_END_TIME.strftime('%B %d, %Y at %I:%M %p')),
+        parse_mode=ParseMode.MARKDOWN,
+        reply_markup=reply_markup
+    )
+
+def handle_admin_end_comp(update: Update, context: CallbackContext) -> None:
+    query = update.callback_query
+    if not is_admin(query.from_user.id):
+        return
+    
+    query.answer()
+    
+    end_comp_text = """
+🔚 *END COMPETITION*
+
+This will immediately end the competition and:
+• Clear all participant data
+• Stop new registrations
+• Keep current VIP members
+
+To end competition, use:
+/end
+
+⚠️ This action cannot be undone!
+"""
+    
+    keyboard = [
+        [InlineKeyboardButton("🔙 Back to Admin", callback_data="admin_back"),
+         InlineKeyboardButton("❌ Close", callback_data="admin_close")]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    query.edit_message_text(end_comp_text, parse_mode=ParseMode.MARKDOWN, reply_markup=reply_markup)
+
+def handle_admin_reset(update: Update, context: CallbackContext) -> None:
+    query = update.callback_query
+    if not is_admin(query.from_user.id):
+        return
+    
+    query.answer()
+    
+    reset_text = """
+🔄 *RESET COMPETITION*
+
+This will:
+• Clear ALL data (participants, user data)
+• Reset competition to start fresh
+• Keep current end time
+
+To completely reset, use these commands:
+/end
+/settime YYYY-MM-DD HH:MM
+
+⚠️ This will remove all current participants!
+"""
+    
+    keyboard = [
+        [InlineKeyboardButton("🔙 Back to Admin", callback_data="admin_back"),
+         InlineKeyboardButton("❌ Close", callback_data="admin_close")]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    query.edit_message_text(reset_text, parse_mode=ParseMode.MARKDOWN, reply_markup=reply_markup)
+
+def handle_admin_broadcast(update: Update, context: CallbackContext) -> None:
+    query = update.callback_query
+    if not is_admin(query.from_user.id):
+        return
+    
+    query.answer()
+    
+    broadcast_text = """
+📢 *BROADCAST MESSAGE*
+
+To send message to all participants, use:
+/broadcast your message here
+
+Example:
+/broadcast Competition starts in 1 hour!
+
+⚠️ This will message all registered users.
+"""
+    
+    keyboard = [
+        [InlineKeyboardButton("🔙 Back to Admin", callback_data="admin_back"),
+         InlineKeyboardButton("❌ Close", callback_data="admin_close")]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    query.edit_message_text(broadcast_text, parse_mode=ParseMode.MARKDOWN, reply_markup=reply_markup)
+
+def handle_admin_back(update: Update, context: CallbackContext) -> None:
+    query = update.callback_query
+    if not is_admin(query.from_user.id):
+        return
+    
+    query.answer()
+    admin_panel_from_query(update, context)
+
+def handle_admin_close(update: Update, context: CallbackContext) -> None:
+    query = update.callback_query
+    if not is_admin(query.from_user.id):
+        return
+    
+    query.answer()
+    query.edit_message_text("✅ Admin panel closed.")
+
+def admin_panel_from_query(update: Update, context: CallbackContext) -> None:
+    query = update.callback_query
+    if not is_admin(query.from_user.id):
+        return
+    
+    time_remaining = COMPETITION_END_TIME - datetime.now()
+    hours_remaining = int(time_remaining.total_seconds() // 3600)
+    minutes_remaining = int((time_remaining.total_seconds() % 3600) // 60)
+    
+    stats_text = f"""
+🛠️ *ADMIN PANEL*
+
+📊 Statistics:
+• Participants: {len(registered_users)}/{MAX_REGISTRATIONS}
+• Time Left: {hours_remaining}h {minutes_remaining}m
+• Status: {'🟢 Active' if is_competition_active() else '🔴 Ended'}
+
+⚡ Quick Actions:
+"""
+    
+    keyboard = [
+        [InlineKeyboardButton("📊 View Stats", callback_data="admin_stats"),
+         InlineKeyboardButton("👥 View Participants", callback_data="admin_participants")],
+        [InlineKeyboardButton("⏰ Set End Time", callback_data="admin_set_time"),
+         InlineKeyboardButton("🔚 End Competition", callback_data="admin_end_comp")],
+        [InlineKeyboardButton("🔄 Reset Competition", callback_data="admin_reset"),
+         InlineKeyboardButton("📢 Broadcast", callback_data="admin_broadcast")],
+        [InlineKeyboardButton("❌ Close Panel", callback_data="admin_close")]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    query.edit_message_text(stats_text, parse_mode=ParseMode.MARKDOWN, reply_markup=reply_markup)
+
+# Broadcast command
+def broadcast(update: Update, context: CallbackContext) -> None:
+    if not is_admin(update.effective_user.id):
+        return
+    
+    if not context.args:
+        update.message.reply_text("Usage: /broadcast your message")
+        return
+    
+    message = " ".join(context.args)
+    success_count = 0
+    fail_count = 0
+    
+    for user_id in registered_users:
+        try:
+            context.bot.send_message(
+                chat_id=user_id,
+                text=f"📢 *ANNOUNCEMENT*\n\n{message}",
+                parse_mode=ParseMode.MARKDOWN
+            )
+            success_count += 1
+        except Exception as e:
+            print(f"Failed to send to {user_id}: {e}")
+            fail_count += 1
+    
+    update.message.reply_text(
+        f"📢 Broadcast completed!\n"
+        f"✅ Success: {success_count}\n"
+        f"❌ Failed: {fail_count}",
+        parse_mode=ParseMode.MARKDOWN
+    )
+
+# Original bot functions (keep all your existing functions)
 def start(update: Update, context: CallbackContext) -> None:
     user = update.effective_user
     
@@ -357,7 +663,34 @@ def handle_admin_approval(update: Update, context: CallbackContext) -> None:
             user_data[user_id]['submitted'] = True
         
         try:
-            # Send approval message to user WITH VIP LINK using HTML formatting
+            # FIRST: Try to add user to VIP group
+            if VIP_GROUP_ID:
+                try:
+                    # Unban first (in case they were previously banned)
+                    context.bot.unban_chat_member(chat_id=VIP_GROUP_ID, user_id=user_id)
+                    
+                    # Add user to group (using promote_chat_member with minimal permissions)
+                    context.bot.promote_chat_member(
+                        chat_id=VIP_GROUP_ID,
+                        user_id=user_id,
+                        can_send_messages=True,
+                        can_send_media_messages=True,
+                        can_send_other_messages=True,
+                        can_add_web_page_previews=True
+                    )
+                    
+                    username = user_data[user_id].get('username', 'New User')
+                    # Notify VIP group
+                    context.bot.send_message(
+                        chat_id=VIP_GROUP_ID,
+                        text=f"🎉 New VIP member: @{username}! Welcome to the competition! 🏆"
+                    )
+                    
+                except Exception as e:
+                    print(f"Error adding user to group: {e}")
+                    # Continue anyway - send them the link
+            
+            # SECOND: Send approval message to user WITH VIP LINK using HTML formatting
             approval_message = f"""
 🎉 <b>APPROVED!</b>
 
@@ -374,6 +707,8 @@ Welcome to TMZ BRAND VIP Quiz!
 • Search: {VIP_GROUP_USERNAME}
 • Join the group
 
+We've added you to the VIP group! If you don't see it, use the link above.
+
 Good luck in the competition! 🏆
 """
             context.bot.send_message(
@@ -381,17 +716,6 @@ Good luck in the competition! 🏆
                 text=approval_message,
                 parse_mode=ParseMode.HTML
             )
-            
-            # Notify VIP group
-            if VIP_GROUP_ID:
-                try:
-                    username = user_data[user_id].get('username', 'New User')
-                    context.bot.send_message(
-                        chat_id=VIP_GROUP_ID,
-                        text=f"🎉 New VIP member: @{username}! Welcome to the competition! 🏆"
-                    )
-                except Exception as e:
-                    print(f"Error sending to group: {e}")
                     
         except Exception as e:
             print(f"Error sending approval message: {e}")
@@ -402,7 +726,7 @@ Good luck in the competition! 🏆
             f"✅ *Approved Successfully!*\n\n"
             f"User: @{username}\n"
             f"Spots filled: {len(registered_users)}/{MAX_REGISTRATIONS}\n\n"
-            f"User has been notified and VIP group link sent!",
+            f"User has been added to VIP group and notified!",
             parse_mode=ParseMode.MARKDOWN
         )
         
@@ -528,19 +852,34 @@ def main() -> None:
     updater = Updater(BOT_TOKEN, use_context=True)
     dp = updater.dispatcher
 
+    # User commands
     dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(MessageHandler(Filters.photo | Filters.document, handle_payment_proof))
+    dp.add_handler(MessageHandler(Filters.chat_type.groups, set_group_id))
+    
+    # Admin commands
+    dp.add_handler(CommandHandler("admin", admin_panel))
     dp.add_handler(CommandHandler("stats", show_stats))
     dp.add_handler(CommandHandler("end", end_competition))
     dp.add_handler(CommandHandler("settime", set_end_time))
-    dp.add_handler(MessageHandler(Filters.photo | Filters.document, handle_payment_proof))
-    dp.add_handler(MessageHandler(Filters.chat_type.groups, set_group_id))
+    dp.add_handler(CommandHandler("broadcast", broadcast))
+    
+    # Callback queries
     dp.add_handler(CallbackQueryHandler(handle_learn_more, pattern="^learn_more$"))
     dp.add_handler(CallbackQueryHandler(handle_how_to_join, pattern="^how_to_join$"))
     dp.add_handler(CallbackQueryHandler(handle_payment_details, pattern="^payment_details$"))
     dp.add_handler(CallbackQueryHandler(handle_back_to_start, pattern="^back_to_start$"))
-    
-    # FIXED: Use a single handler for both approve and reject with proper pattern
     dp.add_handler(CallbackQueryHandler(handle_admin_approval, pattern="^(approve|reject)_"))
+    
+    # Admin panel callbacks
+    dp.add_handler(CallbackQueryHandler(handle_admin_stats, pattern="^admin_stats$"))
+    dp.add_handler(CallbackQueryHandler(handle_admin_participants, pattern="^admin_participants$"))
+    dp.add_handler(CallbackQueryHandler(handle_admin_set_time, pattern="^admin_set_time$"))
+    dp.add_handler(CallbackQueryHandler(handle_admin_end_comp, pattern="^admin_end_comp$"))
+    dp.add_handler(CallbackQueryHandler(handle_admin_reset, pattern="^admin_reset$"))
+    dp.add_handler(CallbackQueryHandler(handle_admin_broadcast, pattern="^admin_broadcast$"))
+    dp.add_handler(CallbackQueryHandler(handle_admin_back, pattern="^admin_back$"))
+    dp.add_handler(CallbackQueryHandler(handle_admin_close, pattern="^admin_close$"))
 
     j = updater.job_queue
     j.run_repeating(check_competition_end, interval=60, first=10)
@@ -548,6 +887,7 @@ def main() -> None:
     print("TMZ VIP BOT IS LIVE!")
     print(f"Competition ends: {COMPETITION_END_TIME}")
     print(f"VIP Group: {VIP_GROUP_LINK}")
+    print(f"Admin Panel: Use /admin command")
     
     updater.start_polling()
     updater.idle()
