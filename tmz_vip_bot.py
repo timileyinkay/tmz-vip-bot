@@ -97,7 +97,7 @@ def handle_admin_stats(update: Update, context: CallbackContext) -> None:
 """
     
     keyboard = [
-        [InlineKeyboardButton("🔙 Back to Admin", callback_data="admin_back"),
+        [InlineKeyboardButton("🔙 Back to Admin", callback_data="admin_back")],
         [InlineKeyboardButton("❌ Close", callback_data="admin_close")]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
@@ -337,11 +337,10 @@ def broadcast(update: Update, context: CallbackContext) -> None:
         parse_mode=ParseMode.MARKDOWN
     )
 
-# Original bot functions (keep all your existing functions)
+# Original bot functions
 def start(update: Update, context: CallbackContext) -> None:
     user = update.effective_user
     
-    # Prevent multiple replies in groups
     if update.message.chat.type in ['group', 'supergroup']:
         if user.id in messaged_in_groups:
             return
@@ -639,7 +638,6 @@ def handle_admin_approval(update: Update, context: CallbackContext) -> None:
     
     data = query.data
     
-    # Extract user_id from callback data (approve_123456 or reject_123456)
     if data.startswith('approve_'):
         user_id = int(data.split('_')[1])
         action = 'approve'
@@ -654,22 +652,17 @@ def handle_admin_approval(update: Update, context: CallbackContext) -> None:
         return
     
     if action == 'approve':
-        # Add user to registered users
         registered_users.add(user_id)
         
-        # Update user data
         if user_id in user_data:
             user_data[user_id]['approved'] = True
             user_data[user_id]['submitted'] = True
         
         try:
-            # FIRST: Try to add user to VIP group
             if VIP_GROUP_ID:
                 try:
-                    # Unban first (in case they were previously banned)
                     context.bot.unban_chat_member(chat_id=VIP_GROUP_ID, user_id=user_id)
                     
-                    # Add user to group (using promote_chat_member with minimal permissions)
                     context.bot.promote_chat_member(
                         chat_id=VIP_GROUP_ID,
                         user_id=user_id,
@@ -680,7 +673,6 @@ def handle_admin_approval(update: Update, context: CallbackContext) -> None:
                     )
                     
                     username = user_data[user_id].get('username', 'New User')
-                    # Notify VIP group
                     context.bot.send_message(
                         chat_id=VIP_GROUP_ID,
                         text=f"🎉 New VIP member: @{username}! Welcome to the competition! 🏆"
@@ -688,9 +680,7 @@ def handle_admin_approval(update: Update, context: CallbackContext) -> None:
                     
                 except Exception as e:
                     print(f"Error adding user to group: {e}")
-                    # Continue anyway - send them the link
             
-            # SECOND: Send approval message to user WITH VIP LINK using HTML formatting
             approval_message = f"""
 🎉 <b>APPROVED!</b>
 
@@ -720,7 +710,6 @@ Good luck in the competition! 🏆
         except Exception as e:
             print(f"Error sending approval message: {e}")
         
-        # Update admin message
         username = user_data[user_id].get('username', 'User') if user_id in user_data else 'User'
         query.edit_message_text(
             f"✅ *Approved Successfully!*\n\n"
@@ -746,7 +735,6 @@ Good luck in the competition! 🏆
         except Exception as e:
             print(f"Error sending rejection message: {e}")
         
-        # Reset user submission status
         if user_id in user_data:
             user_data[user_id]['submitted'] = False
         
@@ -817,7 +805,6 @@ def set_group_id(update: Update, context: CallbackContext) -> None:
     global VIP_GROUP_ID
     if update.message.chat.type in ['group', 'supergroup']:
         VIP_GROUP_ID = update.message.chat.id
-        # Silent configuration - no group message
         if update.effective_user.id == ADMIN_USER_ID:
             context.bot.send_message(
                 chat_id=ADMIN_USER_ID,
@@ -833,7 +820,6 @@ def check_competition_end(context: CallbackContext):
         logging.info("Competition ended - data cleared")
 
 def main() -> None:
-    # Web server for deployment
     app = Flask(__name__)
 
     @app.route('/')
@@ -848,30 +834,25 @@ def main() -> None:
     flask_thread.daemon = True
     flask_thread.start()
 
-    # Initialize bot
     updater = Updater(BOT_TOKEN, use_context=True)
     dp = updater.dispatcher
 
-    # User commands
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(MessageHandler(Filters.photo | Filters.document, handle_payment_proof))
     dp.add_handler(MessageHandler(Filters.chat_type.groups, set_group_id))
     
-    # Admin commands
     dp.add_handler(CommandHandler("admin", admin_panel))
     dp.add_handler(CommandHandler("stats", show_stats))
     dp.add_handler(CommandHandler("end", end_competition))
     dp.add_handler(CommandHandler("settime", set_end_time))
     dp.add_handler(CommandHandler("broadcast", broadcast))
     
-    # Callback queries
     dp.add_handler(CallbackQueryHandler(handle_learn_more, pattern="^learn_more$"))
     dp.add_handler(CallbackQueryHandler(handle_how_to_join, pattern="^how_to_join$"))
     dp.add_handler(CallbackQueryHandler(handle_payment_details, pattern="^payment_details$"))
     dp.add_handler(CallbackQueryHandler(handle_back_to_start, pattern="^back_to_start$"))
     dp.add_handler(CallbackQueryHandler(handle_admin_approval, pattern="^(approve|reject)_"))
     
-    # Admin panel callbacks
     dp.add_handler(CallbackQueryHandler(handle_admin_stats, pattern="^admin_stats$"))
     dp.add_handler(CallbackQueryHandler(handle_admin_participants, pattern="^admin_participants$"))
     dp.add_handler(CallbackQueryHandler(handle_admin_set_time, pattern="^admin_set_time$"))
